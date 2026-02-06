@@ -7,10 +7,9 @@ from datetime import datetime, timedelta
 def get_btc_usd():
     api_key = os.environ.get("COIN_API_KEY")
     if not api_key:
-        return "실패: COIN_API_KEY가 비어있음 (GitHub Secrets / env 주입 확인)"
+        return "실패: COIN_API_KEY가 비어있음"
 
-    # ✅ Data API (예시) - Latest Tick
-    # 문서 예시처럼 data-api.coindesk.com + latest/tick 계열 사용
+
     url = "https://data-api.coindesk.com/index/cc/v1/latest/tick"
 
     params = {
@@ -44,12 +43,11 @@ def update_readme():
     now_kst = now_utc + timedelta(hours=9)
     formatted_time = now_kst.strftime("%Y-%m-%d %H:%M:%S")
 
-    # 디자인이 적용된 README 내용
     content = f"""
 # 🚀 Crypto Real-Time Tracker
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SAWARATSUKI/ServiceLogos/main/Bitcoin/Bitcoin.png" width="100" />
+  <img src="coin.jpg width="100" />
 </p>
 
 <div align="center">
