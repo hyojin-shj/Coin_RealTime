@@ -2,7 +2,7 @@
 # 🚀 Crypto Real-Time Tracker
 
 <p align="center">
-  <img src="coin.jpg" width="100" />
+  <img src="coin.jpg" width="500" />
 </p>
 
 <div align="center">
@@ -15,10 +15,10 @@
 ### 📊 Market Overview
 | Asset | Current Price (USD) | Status |
 | :--- | :---: | :---: |
-| **Bitcoin (BTC)** | `$65115.2533594753` | 🟢 Live |
+| **Bitcoin (BTC)** | `$65023.1954315812` | 🟢 Live |
 
 > [!TIP]
-> **최근 업데이트:** `2026-02-06 15:58:21 (KST)`  
+> **최근 업데이트:** `2026-02-06 15:59:24 (KST)`  
 > 이 리포지토리는 오픈 데이터를 활용하여 투명한 시세 정보를 제공합니다.
 
 ---
