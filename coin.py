@@ -4,52 +4,50 @@ from datetime import datetime
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-def get_bitcoin_price():
-    # 깃허브 Secrets에서 키 가져오기
+def get_btc_usd():
     api_key = os.environ.get("COIN_API_KEY")
-    url = "https://api.coindesk.com/v1/bpi/currentprice.json"
-    
-    # 1. 재시도 로직 설정 (DNS 에러 및 일시적 서버 오류 대비)
-    session = requests.Session()
-    retry = Retry(total=3, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount('https://', adapter)
-    
-    # 2. 헤더에 API 키 포함
-    # 참고: CoinDesk API 버전에 따라 헤더 이름이 다를 수 있습니다.
-    headers = {
-        "x-api-key": api_key,
-        "Content-Type": "application/json"
+    if not api_key:
+        return "실패: COIN_API_KEY가 비어있음 (GitHub Secrets / env 주입 확인)"
+
+    # ✅ Data API (예시) - Latest Tick
+    # 문서 예시처럼 data-api.coindesk.com + latest/tick 계열 사용
+    url = "https://data-api.coindesk.com/index/cc/v1/latest/tick"
+
+    params = {
+        "market": "cadli",        # 대표 시장 예시(문서/상품에 따라 ccix 등도 있음)
+        "instruments": "BTC-USD", # 또는 instrument(s) 파라미터 형태는 문서에 맞춰 조정
+        "api_key": api_key,       # ✅ 쿼리로 키 붙이기(가장 확실)
     }
-    
+
+    headers = {
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (GitHubActions; +https://github.com/)"
+    }
+
+    r = requests.get(url, params=params, headers=headers, timeout=20)
+    if r.status_code != 200:
+        return f"실패: HTTP {r.status_code} - {r.text[:160]}"
+
+    data = r.json()
+
+    # 응답 구조는 market/상품마다 달라질 수 있어서 안전하게 접근
+    # (예: Data -> BTC-USD -> VALUE 같은 형태로 오는 케이스가 있음)
     try:
-        response = session.get(url, headers=headers, timeout=15)
-        response.raise_for_status()
-        data = response.json()
-        
-        price_usd = data["bpi"]["USD"]["rate"]
-        return f"현재 비트코인 시세: ${price_usd}"
-        
-    except Exception as e:
-        print(f"Error detail: {e}")
-        return f"데이터 가져오기 실패 (네트워크/키 확인 필요)"
+        value = data["Data"]["BTC-USD"]["VALUE"]
+        return f"현재 비트코인 시세: ${value}"
+    except Exception:
+        return f"성공은 했는데 파싱 실패: {str(data)[:200]}"
 
 def update_readme():
-    price_info = get_bitcoin_price()
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    content = f"""
-# 🚀 Crypto Auto Tracker (CoinDesk)
+    price_info = get_btc_usd()
+    now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
-이 리포지토리는 GitHub Actions를 통해 비트코인 시세를 자동 트래킹합니다.
+    content = f"""# 🚀 Crypto Auto Tracker (CoinDesk Data API)
 
-### 💰 Bitcoin Price (USD)
+### 💰 BTC-USD
 > **{price_info}**
 
 ⏳ 마지막 갱신: {now} (UTC)
-
----
-*발급받으신 API Key를 사용하여 안전하게 업데이트 중입니다.*
 """
     with open("README.md", "w", encoding="utf-8") as f:
         f.write(content)
