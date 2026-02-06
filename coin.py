@@ -1,8 +1,8 @@
 import os
 import requests
-from datetime import datetime
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from datetime import datetime, timedelta 
 
 def get_btc_usd():
     api_key = os.environ.get("COIN_API_KEY")
