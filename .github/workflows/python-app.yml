@@ -33,8 +33,19 @@ jobs:
           
     - name: Commit and Push
       run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git commit -m "자동 업데이트: 코인 정보 갱신" || echo "No changes to commit"
-          git push
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            
+            git add README.md
+            
+            if ! git diff --staged --quiet; then
+              git commit -m "자동 업데이트: 코인 정보 갱신"
+              
+              # 1. 푸시 전 서버의 최신 상태를 가져와서 내 커밋을 그 뒤에 이어 붙임 (Rebase)
+              git pull --rebase origin main
+              
+              # 2. 합쳐진 상태로 푸시
+              git push origin main
+            else
+              echo "No changes to commit"
+            fi
