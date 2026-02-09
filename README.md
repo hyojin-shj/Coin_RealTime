@@ -33,7 +33,7 @@
 <details>
   <summary><b>어떻게 작동하나요? (How it works)</b></summary>
   <br />
-  1. <b>Cron Job:</b> 5분마다 워크플로우를 트리거합니다.<br />
+  1. <b>Cron Job:</b> 하루 1회 00:00분에 워크플로우를 트리거합니다.<br />
   2. <b>Python Script:</b> CoinDesk API를 통해 최신 시세를 수집합니다.<br />
   3. <b>Git Bot:</b> 갱신된 내용을 자동으로 README에 커밋하고 푸시합니다.
 </details>
